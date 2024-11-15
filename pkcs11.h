@@ -38,7 +38,13 @@ class PKCS11
 {
 
 public:
-	enum State { NoCertificate, LoginAborted, LoginFailed, JustLoggedIn, AutoLoggedIn };
+	enum State { 
+		NoCertificate, //no certificate has been loaded - public and private keys will be null
+		LoginAborted, //user-provided pass was empty
+		LoginFailed, //wrong password or locked smart card
+		JustLoggedIn, //logging in for a first time after the smart card has been plugged in
+		AutoLoggedIn //the card has already been unlocked
+	};
 
 private:
 	unsigned int nslots{ 0 };
@@ -57,14 +63,13 @@ private:
 	static std::vector<X509Details> getCertList(bool returnFirst);
 
 public:
-	//Constructor taking the password callback and the callback for chosing certificate if more than one are found
+	//Constructor takmes the password callback and the callback for chosing a certificate if more than one are found
 	//If the certificate callback isnt provided the object is initialized with the first found certificate
 	PKCS11(
 		std::function<std::string(const X509Details& data)> passCallback,
 		std::function<int(const std::vector<X509Details>& certList)> certCallback = nullptr
 	);
 
-	//returns true if the smart card has been just plugged in
 	PKCS11::State getState() const { return m_state; }
 
 	const std::string& pem_x509cert() const { return m_cert_details.x509_pem; }
@@ -73,7 +78,7 @@ public:
 	//taking ownership of the private key doesn't call the free functions in destructor
 	evp_pkey_st* takePrivateKey(bool takeOnwership = false);
 
-	//setting multiple driver paths
+	//can set multiple driver paths
 	static void setDriverPaths(const std::vector<std::string>& driverPaths);
 
 	static void cleanup();
