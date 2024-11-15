@@ -40,6 +40,7 @@ class PKCS11
 public:
 	enum State { 
 		NoCertificate, //no certificate has been loaded - public and private keys will be null
+		NoCertificateChosen, //among several certificates, none of them was chosen
 		LoginAborted, //user-provided pass was empty
 		LoginFailed, //wrong password or locked smart card
 		JustLoggedIn, //logging in for a first time after the smart card has been plugged in

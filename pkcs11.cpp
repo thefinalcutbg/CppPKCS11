@@ -238,7 +238,10 @@ PKCS11::PKCS11(
 	{
 		certIdx = certCallback(certList);
 
-		if (certIdx < 0 || certIdx >= certList.size()) { return; }
+		if (certIdx < 0 || certIdx >= certList.size()) { 
+			m_state = NoCertificateChosen;
+			return; 
+		}
 	}
 
 	m_certificate = loadCertificate(certList[certIdx]);
