@@ -126,7 +126,7 @@ PKCS11_cert_st* PKCS11::loadCertificate(const X509Details& cert) {
 
 	current_slot = PKCS11_find_next_token(ctx, pslots, nslots, nullptr);
 
-	//iterrating slots
+	//iterating slots
 	while (current_slot != NULL) {
 
 		PKCS11_cert_st* certs{ nullptr };
@@ -137,7 +137,7 @@ PKCS11_cert_st* PKCS11::loadCertificate(const X509Details& cert) {
 		//finding a valid x509_pem
 		if (ncerts == 0) continue;
 
-		//iterrating certificates
+		//iterating certificates
 		for (unsigned int i = 0; i < ncerts; i++)
 		{
 			auto currentCert = X509Details(certs[i].x509, cert.driverPath);
@@ -158,7 +158,7 @@ std::vector<X509Details> PKCS11::getCertList(bool returnFirst) {
 
 	std::vector<X509Details> certList;
 
-	//iterrating all dirver paths
+	//iterating all dirver paths
 	for (auto& path : s_driverPaths)
 	{
 		if (PKCS11_CTX_load(ctx, path.data()) == -1) continue;
@@ -170,7 +170,7 @@ std::vector<X509Details> PKCS11::getCertList(bool returnFirst) {
 
 		PKCS11_slot_st* slot = PKCS11_find_token(ctx, pslots_temp, nslots_temp);
 
-		//iterrating slots
+		//iterating slots
 		while (slot != NULL) {
 
 			PKCS11_cert_st* certs{ nullptr };
@@ -181,7 +181,7 @@ std::vector<X509Details> PKCS11::getCertList(bool returnFirst) {
 			//finding a valid x509_pem
 			if (ncerts == 0) continue;
 
-			//iterrating certificates
+			//iterating certificates
 			for (unsigned int i = 0; i < ncerts; i++)
 			{
 				auto currentCert = X509Details(certs[i].x509, path);
