@@ -40,7 +40,8 @@ int main()
 
     };
 
-    PKCS11 pkcs(passCallback, certListCallback);// , certListCallback);
+    //If the second callback is not provided, the first found certificate will be loaded
+    PKCS11 pkcs(passCallback, certListCallback);
 
     auto state = pkcs.getState();
 
