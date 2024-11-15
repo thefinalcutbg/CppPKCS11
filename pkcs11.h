@@ -64,7 +64,6 @@ private:
 	static std::vector<X509Details> getCertList(bool returnFirst);
 
 public:
-	//Constructor takmes the password callback and the callback for chosing a certificate if more than one are found
 	//If the certificate callback isnt provided the object is initialized with the first found certificate
 	PKCS11(
 		std::function<std::string(const X509Details& data)> passCallback,
