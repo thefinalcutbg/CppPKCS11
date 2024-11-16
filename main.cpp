@@ -48,6 +48,7 @@ int main()
     switch (pkcs.getState())
     {
         case PKCS11::NoCertificate:
+        case PKCS11::NoCertificateChosen:
         case PKCS11::LoginAborted:
         case PKCS11::LoginFailed:
             std::cout << "Login failed";
