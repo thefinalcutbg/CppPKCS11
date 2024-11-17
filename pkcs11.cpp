@@ -1,8 +1,53 @@
 ﻿#include "pkcs11.h"
-#include <libp11\libp11.h>
+
 #include <vector>
-#include <openssl/pem.h>
 #include <filesystem>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
+
+#include <libp11\libp11.h>
+#include <openssl/pem.h>
+
+
+std::string getCurrentDateISO8601() {
+	// Get current time as system time
+	auto now = std::chrono::system_clock::now();
+
+	// Convert to time_t for formatting
+	std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+	// Format the time into ISO 8601 format
+	std::tm tm_struct;
+#ifdef _WIN32
+	localtime_s(&tm_struct, &now_time); // Windows-specific
+#else
+	localtime_r(&now_time, &tm_struct); // POSIX-specific
+#endif
+
+	std::ostringstream oss;
+	oss << std::put_time(&tm_struct, "%Y-%m-%dT%H:%M:%S");
+
+	// Add timezone offset
+	std::time_t utc_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::tm utc_tm_struct;
+#ifdef _WIN32
+	gmtime_s(&utc_tm_struct, &utc_time);
+#else
+	gmtime_r(&utc_time, &utc_tm_struct);
+#endif
+	std::time_t utc_now = std::mktime(&utc_tm_struct);
+	int offset_seconds = static_cast<int>(std::difftime(now_time, utc_now));
+	int offset_hours = offset_seconds / 3600;
+	int offset_minutes = std::abs(offset_seconds % 3600) / 60;
+
+	oss << (offset_seconds >= 0 ? "+" : "-")
+		<< std::setfill('0') << std::setw(2) << std::abs(offset_hours)
+		<< ":"
+		<< std::setfill('0') << std::setw(2) << offset_minutes;
+
+	return oss.str();
+}
 
 X509Details::X509Details(x509_st* cert, const std::string& driverPath) :
 	driverPath(driverPath)
@@ -76,16 +121,11 @@ X509Details::X509Details(x509_st* cert, const std::string& driverPath) :
 
 bool X509Details::isValid() const
 {
-	if (x509_pem.empty()) { return false; }
-
-	auto now = std::chrono::system_clock::now();
-
-	std::string currentDateTime8601 = std::format("{:%FT%TZ}", now);
+	std::string currentDateTime8601 = getCurrentDateISO8601();
 
 	return currentDateTime8601 < validTo8601
 		&& currentDateTime8601 > validFrom8601
 		;
-
 }
 
 PKCS11_CTX* ctx{ nullptr };
