@@ -219,7 +219,7 @@ std::vector<X509Details> PKCS11::getCertList(bool returnFirst) {
 			PKCS11_enumerate_certs(slot->token, &certs, &ncerts);
 
 			//finding a valid x509_pem
-			if (ncerts == 0) continue;
+			if (ncerts == 0) break;
 
 			//iterating certificates
 			for (unsigned int i = 0; i < ncerts; i++)
