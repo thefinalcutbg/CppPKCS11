@@ -218,9 +218,6 @@ std::vector<X509Details> PKCS11::getCertList(bool returnFirst) {
 
 			PKCS11_enumerate_certs(slot->token, &certs, &ncerts);
 
-			//finding a valid x509_pem
-			if (ncerts == 0) break;
-
 			//iterating certificates
 			for (unsigned int i = 0; i < ncerts; i++)
 			{
@@ -248,6 +245,8 @@ std::vector<X509Details> PKCS11::getCertList(bool returnFirst) {
 		}
 
 		PKCS11_release_all_slots(ctx, pslots_temp, nslots_temp);
+
+		PKCS11_CTX_unload(ctx);
 	}
 
 	//filter the list with valid certs only?
