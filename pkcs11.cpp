@@ -152,6 +152,7 @@ void PKCS11::cleanup()
 	if (ctx)
 	{
 		PKCS11_CTX_unload(ctx);
+		PKCS11_CTX_free(ctx);
 		ctx = nullptr;
 	}
 }
@@ -370,4 +371,6 @@ PKCS11::~PKCS11()
 	if (!prv_key_owned) return;
 
 	PKCS11_release_all_slots(ctx, pslots, nslots);
+
+	PKCS11_CTX_unload(ctx);
 }
